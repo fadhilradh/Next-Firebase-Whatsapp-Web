@@ -6,6 +6,8 @@ import { auth, provider } from "../firebase";
 function Login() {
   const signInWithGoogle = () => {
     auth.signInWithPopup(provider).catch(alert);
+    console.log(auth);
+    console.log(provider);
   };
   return (
     <div style={loginContainer}>

@@ -1,86 +1,85 @@
-import styled from "styled-components";
 import { Avatar, IconButton, Button } from "@material-ui/core";
 import ChatIcon from "@material-ui/icons/Chat";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import SearchIcon from "@material-ui/icons/Search";
 import * as EmailValidator from "email-validator";
+import { auth, db } from "../firebase";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { useCollection } from "react-firebase-hooks/firestore";
+import {
+  containerStyle,
+  headerStyle,
+  searchContainer,
+  searchInput,
+  startChatButton,
+} from "./sidebarStyle";
+import Chat from "./Chat";
 
 function Sidebar() {
+  const [user] = useAuthState(auth);
+  const userChatRef = db
+    .collection("chats")
+    .where("users", "array-contains", user.email);
+  const [chatSnapShots] = useCollection(userChatRef);
+
+  const chatAlreadyExist = (inputtedEmail) =>
+    !!chatSnapShots?.docs.find(
+      (chat) =>
+        chat.data().users.find((user) => user === inputtedEmail)?.length > 0
+    );
+
   const startChat = () => {
-    const userInput = prompt(
+    const recipientEmail = prompt(
       "Please enter the email address of user you want to chat"
     );
 
-    if (!input) return null;
+    if (!recipientEmail) return null;
 
-    if (EmailValidator.validate(input)) {
+    if (
+      EmailValidator.validate(recipientEmail) &&
+      recipientEmail !== user.email &&
+      !chatAlreadyExist(recipientEmail)
+    ) {
+      db.collection("chats").add({
+        users: [user.email, recipientEmail],
+      });
     }
   };
 
   return (
-    <Container>
-      <Header>
-        <IconButton>
-          <UserAvatar />
+    <div style={containerStyle}>
+      <div style={headerStyle}>
+        <IconButton onClick={() => auth.signOut()}>
+          <Avatar src={user.photo} />
         </IconButton>
 
-        <IconsContainer>
+        <div>
           <IconButton>
             <ChatIcon />
           </IconButton>
           <IconButton>
             <MoreVertIcon />
           </IconButton>
-        </IconsContainer>
-      </Header>
+        </div>
+      </div>
 
-      <SearchContainer>
+      <div style={searchContainer}>
         <SearchIcon fontSize="large" />
-        <SearchInput placeholder="Search Chats Here" height={20} />
-      </SearchContainer>
-      <StartChatButton onClick={startChat}>Start New Chat</StartChatButton>
-    </Container>
+        <input
+          style={searchInput}
+          placeholder="Search Chats Here"
+          height={20}
+        />
+      </div>
+      <Button style={startChatButton} onClick={startChat}>
+        Start New Chat
+      </Button>
+
+      {chatSnapShots?.docs.map((chat) => (
+        <Chat key={chat.id} id={chat.id} user={chat.user} />
+      ))}
+    </div>
   );
 }
 
 export default Sidebar;
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const Header = styled.div`
-  display: flex;
-  width: 100%;
-  justify-content: space-between;
-  align-items: center;
-  border: 1px solid whitesmoke;
-`;
-
-const IconsContainer = styled.div``;
-
-const UserAvatar = styled(Avatar)``;
-
-const SearchContainer = styled.div`
-  padding-left: 1rem;
-  display: flex;
-  align-items: center;
-  border-bottom: 1 solid whitesmoke;
-`;
-
-const SearchInput = styled.input`
-  outline-width: 0;
-  border: none;
-  margin: 0 1rem 0 0.5rem;
-  flex: 1;
-`;
-
-const StartChatButton = styled(Button)`
-  color: grey;
-
-  &&& {
-    border-bottom: 1px solid whitesmoke;
-    border-top: 1px solid whitesmoke;
-  }
-`;
