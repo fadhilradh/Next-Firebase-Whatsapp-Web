@@ -50,11 +50,11 @@ function Sidebar() {
     <div style={containerStyle}>
       <div style={headerStyle}>
         <IconButton onClick={() => auth.signOut()}>
-          <Avatar src={user.photo} />
+          <Avatar src={user.photoURL} />
         </IconButton>
 
         <div>
-          <IconButton>
+          <IconButton size="small">
             <ChatIcon />
           </IconButton>
           <IconButton>
@@ -76,7 +76,7 @@ function Sidebar() {
       </Button>
 
       {chatSnapShots?.docs.map((chat) => (
-        <Chat key={chat.id} id={chat.id} user={chat.user} />
+        <Chat key={chat.id} id={chat.id} users={chat.data().users} />
       ))}
     </div>
   );

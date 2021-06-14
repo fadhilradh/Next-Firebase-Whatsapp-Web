@@ -6,6 +6,7 @@ const headerStyle = {
   justifyContent: "space-between",
   alignItems: "center",
   border: "1px solid whitesmoke",
+  background: "whitesmoke",
 };
 const searchContainer = {
   paddingLeft: "1rem",

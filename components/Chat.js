@@ -1,11 +1,25 @@
 import { Avatar } from "@material-ui/core";
+import { useAuthState } from "react-firebase-hooks/auth";
 import styled from "styled-components";
+import { auth } from "../firebase";
+import getRecipientEmail from "../lib/getRecipientEmail";
+import { useRouter } from "next/router";
 
-function Chat({ id, user }) {
+function Chat({ id, users }) {
+  const router = useRouter();
+
+  const [user] = useAuthState(auth);
+
+  const recipientEmail = getRecipientEmail(users, user);
+
+  const enterChat = () => {
+    router.push(`/chat/${id}`);
+  };
+
   return (
-    <ChatContainer>
-      <Avatar />
-      <p style={{ marginLeft: "10px" }}>Recipient Email</p>
+    <ChatContainer onClick={enterChat}>
+      <Avatar src={user.image} />
+      <p style={{ marginLeft: "10px" }}>{recipientEmail}</p>
     </ChatContainer>
   );
 }
