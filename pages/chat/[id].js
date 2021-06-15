@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import Sidebar from "../../components/Sidebar";
 import ChatHeader from "../../components/ChatHeader";
-import ChatsContainer from "../../components/ChatsContainer";
+// import ChatsContainer from "../../components/ChatsContainer";
 import ChatInput from "../../components/ChatInput";
 import { auth, db } from "../../firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -11,6 +11,7 @@ import { useRouter } from "next/router";
 import Message from "../../components/Message";
 
 function Chat({ chat, messages }) {
+  console.log(messages);
   const [user] = useAuthState(auth);
   const router = useRouter();
   const [messagesSnapshots] = useCollection(
@@ -33,6 +34,14 @@ function Chat({ chat, messages }) {
           }}
         />
       ));
+    } else {
+      return JSON.parse(messages).map((message) => (
+        <Message
+          key={message.id}
+          user={message.user}
+          message={message.message}
+        />
+      ));
     }
   };
 
@@ -44,7 +53,7 @@ function Chat({ chat, messages }) {
           recipientEmail={getRecipientEmail(chat.users, user)}
         ></ChatHeader>
         <ChatsContainer>{showMessages()}</ChatsContainer>
-        <ChatInput></ChatInput>
+        <ChatInput user={user} />
       </ChatScreen>
     </Container>
   );
@@ -58,7 +67,7 @@ export async function getServerSideProps(context) {
   // prepare message in the server
   const messagesRef = await ref
     .collection("messages")
-    .orderBy("timestamp", "asc")
+    // .orderBy("timestamp", "asc")
     .get();
 
   const messages = messagesRef.docs
@@ -68,7 +77,7 @@ export async function getServerSideProps(context) {
     }))
     .map((messages) => ({
       ...messages,
-      timestamp: messages.timestamp.toDate().getTime(),
+      // timestamp: messages.timestamp.toDate().getTime(),
     }));
 
   // prep the chats in the server
@@ -77,8 +86,6 @@ export async function getServerSideProps(context) {
     id: chatRes.id,
     ...chatRes.data(),
   };
-
-  console.log(chat, messages);
 
   return {
     props: {
@@ -98,4 +105,9 @@ const ChatScreen = styled.div`
   display: flex;
   flex-direction: column;
   flex: 1;
+`;
+
+const ChatsContainer = styled.div`
+  background: #e5ddd5;
+  flex-grow: 1;
 `;

@@ -1,13 +1,14 @@
 import styled from "styled-components";
 
-function Message() {
+function Message({ user, message }) {
   return (
     <Container>
-      <p>WWW</p>
+      <p>{message.message}</p>
+      <p>aaa</p>
     </Container>
   );
 }
 
 export default Message;
 
-const container = styled.div``;
+const Container = styled.div``;
