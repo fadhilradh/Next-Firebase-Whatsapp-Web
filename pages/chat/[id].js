@@ -6,9 +6,35 @@ import ChatInput from "../../components/ChatInput";
 import { auth, db } from "../../firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import getRecipientEmail from "../../lib/getRecipientEmail";
+import { useCollection } from "react-firebase-hooks/firestore";
+import { useRouter } from "next/router";
+import Message from "../../components/Message";
 
 function Chat({ chat, messages }) {
   const [user] = useAuthState(auth);
+  const router = useRouter();
+  const [messagesSnapshots] = useCollection(
+    db
+      .collection("chats")
+      .doc(router.query.id)
+      .collection("messages")
+      .orderBy("timestamp", "asc")
+  );
+
+  const showMessages = () => {
+    if (messagesSnapshots) {
+      return messagesSnapshots.docs.map((message) => (
+        <Message
+          key={message.id}
+          user={message.data().user}
+          message={{
+            ...message.data(),
+            // timestamp: message.data().timestamp?.toDate().getTime(),
+          }}
+        />
+      ));
+    }
+  };
 
   return (
     <Container>
@@ -17,7 +43,7 @@ function Chat({ chat, messages }) {
         <ChatHeader
           recipientEmail={getRecipientEmail(chat.users, user)}
         ></ChatHeader>
-        <ChatsContainer></ChatsContainer>
+        <ChatsContainer>{showMessages()}</ChatsContainer>
         <ChatInput></ChatInput>
       </ChatScreen>
     </Container>

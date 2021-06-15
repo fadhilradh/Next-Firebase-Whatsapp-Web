@@ -22,20 +22,20 @@ function Chat({ id, users }) {
   };
 
   return (
-    <ChatScreen onClick={enterChat}>
+    <ChatContainer onClick={enterChat}>
       {recipientData ? (
         <Avatar src={recipientData?.photoURL} />
       ) : (
         <Avatar>{recipientEmail[0]}</Avatar>
       )}
       <p style={{ marginLeft: "10px" }}>{recipientEmail}</p>
-    </ChatScreen>
+    </ChatContainer>
   );
 }
 
 export default Chat;
 
-const ChatScreen = styled.div`
+const ChatContainer = styled.div`
   display: flex;
   border-bottom: 1px solid #ededed;
   padding: 10px;

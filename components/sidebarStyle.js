@@ -2,6 +2,7 @@ const containerStyle = {
   display: "flex",
   flexDirection: "column",
   width: "415px",
+  overflowY: "auto",
 };
 
 const headerStyle = {
@@ -9,14 +10,12 @@ const headerStyle = {
   width: "100%",
   justifyContent: "space-between",
   alignItems: "center",
-  border: "1px solid #EDEDED",
   background: "#EDEDED",
 };
 const searchContainer = {
   paddingLeft: "1rem",
   display: "flex",
   alignItems: "center",
-  borderBottom: "1 solid #EDEDED",
   height: "50px",
   background: "#EDEDED",
 };
