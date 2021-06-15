@@ -65,11 +65,7 @@ function Sidebar() {
 
       <div style={searchContainer}>
         <SearchIcon fontSize="large" />
-        <input
-          style={searchInput}
-          placeholder="Search Chats Here"
-          height={20}
-        />
+        <input style={searchInput} placeholder="Search Chats Here" />
       </div>
       <Button style={startChatButton} onClick={startChat}>
         Start New Chat
